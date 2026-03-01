@@ -2,5 +2,5 @@ node_modules/
 .env
 *.pyc
 *.db
-venv/
+.venv/
 __pycache__/
