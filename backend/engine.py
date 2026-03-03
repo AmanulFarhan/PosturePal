@@ -40,3 +40,9 @@ class PostureEngine:
                 })
 
             await asyncio.sleep(0.1)
+
+    def stop(self):
+        self.running = False
+        if self.cap.isOpened():
+            self.cap.release()
+            print("Camera released")

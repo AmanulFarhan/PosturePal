@@ -1,10 +1,18 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from engine import PostureEngine
 
 app = FastAPI()
-engine = PostureEngine()
 
 @app.websocket("/ws/live")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    await engine.start(websocket)
+    engine = PostureEngine()
+
+    try:
+        await engine.start(websocket)
+    except WebSocketDisconnect:
+        print("WebSocket disconnected")
+    except Exception as e:
+        print("Error:", e)
+    finally:
+        engine.stop()

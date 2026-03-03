@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>Posture Stream</h1>
+    <div id="output"></div>
+
+    <script>
+        const ws = new WebSocket("ws://127.0.0.1:8000/ws/live");
+
+        ws.onmessage = (event) => {
+            console.log(event.data);
+            document.getElementById("output").innerText = event.data;
+        };
+
+        ws.onerror = (err) => {
+            console.error("WebSocket error:", err);
+        };
+    </script>
+</body>
+</html>
