@@ -86,8 +86,10 @@ const App = () => {
 
   // Background Timers
   const [badTimer, setBadTimer] = useState(0);
+  const badAlertTimer = useRef(0);
   const [breakTimer, setBreakTimer] = useState(25 * 60);
   const [lowBlinkTimer, setLowBlinkTimer] = useState(0);
+  const lowBlinkAlertTimer = useRef(0);
 
   // Alert Tracking
   const [badPostureAlerts, setBadPostureAlerts] = useState(0);
@@ -294,44 +296,42 @@ const App = () => {
       if (!currentData) return;
       // Posture check
       if (currentData.status === "BAD") {
-        setBadTimer((t) => {
-          const next = t + 1;
-          if (settings.notificationsEnabled && next === settings.postureAlertThreshold) {
-            addAlert("Bad posture detected! Please sit upright.", true);
-            if (notifPermission.current === "granted") {
-              new Notification("PosturePal ⚠️", {
-                body: "Bad posture detected! Please sit upright.",
-                icon: "/favicon.ico"
-              });
-            }
-            setBadPostureAlerts(a => a + 1);
-            return 0;
+        badAlertTimer.current += 1;
+        if (settings.notificationsEnabled && badAlertTimer.current === settings.postureAlertThreshold) {
+          addAlert("Bad posture detected! Please sit upright.", true);
+          if (notifPermission.current === "granted") {
+            new Notification("PosturePal ⚠️", {
+              body: "Bad posture detected! Please sit upright.",
+              icon: "/favicon.ico"
+            });
           }
-          return next;
-        });
+          setBadPostureAlerts(a => a + 1);
+          badAlertTimer.current = 0; // reset alert timer only
+        }
+        setBadTimer(t => t + 1); // UI keeps counting up ✅
         setBadFrames(f => f + 1);
       } else {
+        badAlertTimer.current = 0; // reset when posture is good
         setBadTimer(0);
         setGoodFrames(f => f + 1);
       }
       // Blink check
       if (currentData.blink_rate < 12) {
-        setLowBlinkTimer((t) => {
-          const next = t + 1;
-          if (next === 60) {
-            addAlert("Low blink rate detected. Rest your eyes!");
-            if (notifPermission.current === "granted") {
-              new Notification("PosturePal 👀", {
-                body: "Low blink rate detected. Rest your eyes!",
-                icon: "/favicon.ico"
-              });
-            }
-            setLowBlinkAlerts(a => a + 1);
-            return 0;
+        lowBlinkAlertTimer.current += 1;
+        if (lowBlinkAlertTimer.current === 60) {
+          addAlert("Low blink rate detected. Rest your eyes!");
+          if (notifPermission.current === "granted") {
+            new Notification("PosturePal 👀", {
+              body: "Low blink rate detected. Rest your eyes!",
+              icon: "/favicon.ico"
+            });
           }
-          return next;
-        });
+          setLowBlinkAlerts(a => a + 1);
+          lowBlinkAlertTimer.current = 0; // reset alert timer only
+        }
+        setLowBlinkTimer(t => t + 1); // UI keeps counting up ✅
       } else {
+        lowBlinkAlertTimer.current = 0; // reset when blink rate is normal
         setLowBlinkTimer(0);
       }
       // Break timer
