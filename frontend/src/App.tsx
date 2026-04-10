@@ -32,7 +32,7 @@ interface Settings {
 
 const DEFAULT_SETTINGS: Settings = {
   breakReminderMin: 25,
-  postureAlertThreshold: 30,
+  postureAlertThreshold: 15,
   blinkRateThreshold: 12,
   notificationsEnabled: true,
 };
