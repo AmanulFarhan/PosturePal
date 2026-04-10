@@ -305,6 +305,7 @@ const App = () => {
               });
             }
             setBadPostureAlerts(a => a + 1);
+            return 0;
           }
           return next;
         });
@@ -326,6 +327,7 @@ const App = () => {
               });
             }
             setLowBlinkAlerts(a => a + 1);
+            return 0;
           }
           return next;
         });
